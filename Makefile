@@ -42,3 +42,13 @@ $(OBJ_DIR):
 
 clean:
 	rm -f $(OBJ_DIR)/*.o main monitor receptionist visitor
+
+SHARED_MEMORY_ID=1234
+Rvisitor:
+	./visitor -d 10 -s $(SHARED_MEMORY_ID)
+
+Rreceptionist:
+	./receptionist -d 10 -s $(SHARED_MEMORY_ID)
+
+Rmonitor:
+	./monitor -s $(SHARED_MEMORY_ID)
