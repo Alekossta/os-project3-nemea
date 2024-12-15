@@ -1,6 +1,10 @@
 #include "stdio.h"
+#include "ConsoleReader.h"
 
-int main()
+int main(int argumentsCount, char* arguments[])
 {
-    printf("Hello from visitor!\n");
+    ConsoleArguments consoleArguments;
+    consoleArguments = readConsole(argumentsCount, arguments);
+    printf("Hello from visitor going to visit for %d and shared memory is %d!\n",
+    consoleArguments.time, consoleArguments.shareMemoryId);
 }

@@ -1,7 +1,7 @@
 *.out
 obj/
 
-# named 
+# named
 main
 monitor
 receptionist
