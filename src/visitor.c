@@ -5,6 +5,6 @@ int main(int argumentsCount, char* arguments[])
 {
     ConsoleArguments consoleArguments;
     consoleArguments = readConsole(argumentsCount, arguments);
-    printf("Hello from visitor going to visit for %d and shared memory is %d!\n",
-    consoleArguments.time, consoleArguments.shareMemoryId);
+    printf("Hello from visitor going to visit for %d and shared memory is %s!\n",
+    consoleArguments.time, consoleArguments.sharedMemoryName);
 }

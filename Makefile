@@ -4,6 +4,7 @@ SRC_DIR = src
 OBJ_DIR = obj
 CC = gcc
 CFLAGS = -Wall -I$(INCLUDE_DIR)
+SHARED_MEMORY_NAME= "barInfo_sdi2200171"
 
 MAIN_FILES = main.c monitor.c receptionist.c visitor.c
 COMMON_SRCS = $(filter-out $(addprefix $(SRC_DIR)/, $(MAIN_FILES)), $(wildcard $(SRC_DIR)/*.c))
@@ -20,35 +21,43 @@ MAIN_OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(MAIN_SRCS))
 
 all: main monitor receptionist visitor
 
+# Main target with SHARED_MEMORY_NAME macro passed to the compiler
 main: $(MAIN_OBJS) | $(BIN_DIR)
-	$(CC) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
+# Other targets without SHARED_MEMORY_NAME macro
 monitor: $(MONITOR_OBJS) | $(BIN_DIR)
-	$(CC) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 receptionist: $(RECEPTIONIST_OBJS) | $(BIN_DIR)
-	$(CC) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 visitor: $(VISITOR_OBJS) | $(BIN_DIR)
-	$(CC) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
+# Rule to build object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Create the object directory if it does not exist
 $(OBJ_DIR):
 	mkdir -p $@
 
 .PHONY: all clean
 
+# Clean up all build files
 clean:
 	rm -f $(OBJ_DIR)/*.o main monitor receptionist visitor
 
-SHARED_MEMORY_ID=1234
-Rvisitor:
-	./visitor -d 10 -s $(SHARED_MEMORY_ID)
+# Runtime commands
+rmain:
+	./main 
 
-Rreceptionist:
-	./receptionist -d 10 -s $(SHARED_MEMORY_ID)
+rvisitor:
+	./visitor -d 10 -s "${SHARED_MEMORY_NAME}"
 
-Rmonitor:
-	./monitor -s $(SHARED_MEMORY_ID)
+rrecep:
+	./receptionist -d 10 -s "${SHARED_MEMORY_NAME}"
+
+rmonitor:
+	./monitor -s "${SHARED_MEMORY_NAME}"
