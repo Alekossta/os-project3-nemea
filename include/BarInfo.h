@@ -5,6 +5,10 @@
 typedef struct
 {
     unsigned totalVisitors;
+    unsigned waterSold;
+    unsigned wineSold;
+    unsigned cheeseSold;
+    unsigned saladSold;
     int seats[TABLES_NUM][CHAIRS_NUM];
 } BarInfo;
 

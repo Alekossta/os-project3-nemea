@@ -8,12 +8,23 @@
 #include <stdbool.h>
 #include "definitions.h"
 #include "SharedMemorySegment.h"
+#include "signal.h"
 
 volatile bool bRunning = true;
 
+void handleSignal_CtrlC(int signal)
+{
+    if(signal == SIGINT)
+    {
+        bRunning = false;
+    }
+}
+
 int main(int argumentsCount, char* arguments[])
 {
-    printf("%s\n", SHARED_MEMORY_NAME);
+    // listen for Ctrl+C signal
+    signal(SIGINT, handleSignal_CtrlC);
+    
     // create shared memory
     int smFd = shm_open(SHARED_MEMORY_NAME, O_CREAT | O_RDWR, 0666);
     if(smFd == -1)

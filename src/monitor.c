@@ -5,6 +5,8 @@
 #include <fcntl.h>    
 #include <unistd.h>
 #include "definitions.h"
+#include "SharedMemorySegment.h"
+#include "BarInfo.h"
 
 int main(int argumentsCount, char* arguments[])
 {
@@ -19,10 +21,16 @@ int main(int argumentsCount, char* arguments[])
         return -1;
     }
 
-    void* ptr = mmap(NULL, SHARED_MEMORY_SIZE, PROT_WRITE, MAP_SHARED, smFd, 0);
+    SharedMemorySegment* ptr = mmap(NULL, SHARED_MEMORY_SIZE, PROT_WRITE, MAP_SHARED, smFd, 0);
     if(ptr == MAP_FAILED)
     {
         perror("mmap failed");
         return -1;
     }
+
+    printBarInfo(ptr->barInfo);
+
+    // clean up 
+    munmap(ptr, SHARED_MEMORY_SIZE);
+    close(smFd);
 }
