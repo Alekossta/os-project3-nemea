@@ -10,6 +10,7 @@ typedef struct
     unsigned cheeseSold;
     unsigned saladSold;
     int seats[TABLES_NUM][CHAIRS_NUM];
+    int allowsEntry[TABLES_NUM];
 } BarInfo;
 
 BarInfo createBarInfo();

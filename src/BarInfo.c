@@ -11,9 +11,10 @@ BarInfo createBarInfo()
     barInfo.saladSold = 0;
     for(int i = 0; i < TABLES_NUM; i++)
     {
+        barInfo.allowsEntry[i] = 1;
         for(int j = 0; j < CHAIRS_NUM; j++)
         {
-            barInfo.seats[i][j] = 5;
+            barInfo.seats[i][j] = 0;
         }
     }
     return barInfo;

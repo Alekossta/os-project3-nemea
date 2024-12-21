@@ -9,6 +9,8 @@
 #include "definitions.h"
 #include "SharedMemorySegment.h"
 #include "signal.h"
+#include "definitions.h"
+#include <semaphore.h>
 
 volatile bool bRunning = true;
 
@@ -22,6 +24,8 @@ void handleSignal_CtrlC(int signal)
 
 int main(int argumentsCount, char* arguments[])
 {
+    printf("Press Ctrl+C to stop running main\n");
+
     // listen for Ctrl+C signal
     signal(SIGINT, handleSignal_CtrlC);
     
@@ -49,18 +53,44 @@ int main(int argumentsCount, char* arguments[])
         exit(EXIT_FAILURE);
     }
 
-    // create and print the bar info
-    ptr->barInfo = createBarInfo();
-    printBarInfo(ptr->barInfo);
+    // create a semaphore for each table
+    sem_t* tableSemaphores[TABLES_NUM];
+    const char* tableSemaphoreNames[TABLES_NUM] = {"/table0_sem", "/table1_sem", "/table2_sem"};
+    for(int i = 0; i < TABLES_NUM; i++)
+    {
+        tableSemaphores[i] = sem_open(tableSemaphoreNames[i], O_CREAT | O_EXCL, 0644, CHAIRS_NUM);
+        if(tableSemaphores[i] == SEM_FAILED)
+        {
+            perror("sem_open");
+            // Cleanup previously created semaphores
+            for (int j = 0; j < i; j++) {
+                sem_unlink(tableSemaphores[j]);
+            }
 
-    printf("Shared memory created. Press Ctrl+C to clean up.\n");
+            // in case of error close shared memory too
+            munmap(ptr, SHARED_MEMORY_SIZE);
+            close(smFd);
+            shm_unlink(SHARED_MEMORY_NAME);
 
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // run main until we press ctrl+c
     while(bRunning)
     {
         sleep(5);
     }
 
+    // clean up shared memory
     munmap(ptr, SHARED_MEMORY_SIZE);
     close(smFd);
     shm_unlink(SHARED_MEMORY_NAME);
+
+    // clean up semaphores
+    for(int i = 0; i < TABLES_NUM; i++)
+    {
+        sem_close(tableSemaphores[i]);
+        sem_unlink(tableSemaphoreNames[i]);
+    }
 }
