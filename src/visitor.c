@@ -7,6 +7,7 @@
 #include "definitions.h"
 #include "SharedMemorySegment.h"
 #include "BarInfo.h"
+#include <semaphore.h>
 
 int main(int argumentsCount, char* arguments[])
 {
@@ -28,7 +29,18 @@ int main(int argumentsCount, char* arguments[])
         return -1;
     }
 
-    // check shared memory to see which table allows entry
+    int tableToSit = lookForTable(ptr->barInfo);
+    printf("going to sit at table %d\n", tableToSit);
+    if(tableToSit != -1) // means we found available table
+    {
+        sem_t* barSemaphore = sem_open("/bar_sem", O_RDWR);
+        sem_wait(barSemaphore);
+        printf("began serving me");
+        // choose random food
+        // simulate serving
+        sleep(ptr->receptionistInfo.timeToServe);
+        sem_post(barSemaphore);
+    }
 
     // clean up shared memory
     munmap(ptr, SHARED_MEMORY_SIZE);

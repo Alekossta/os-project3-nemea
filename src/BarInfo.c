@@ -29,10 +29,27 @@ void printBarInfo(BarInfo barInfo)
     printf("Salad sold %u\n", barInfo.saladSold);
     for(int i = 0; i < TABLES_NUM; i++)
     {
-        printf("---Table %d---\n", i+1);
+        printf("---Table %d- Allows Entry: %d---\n", i, barInfo.allowsEntry[i]);
         for(int j = 0; j < CHAIRS_NUM; j++)
         {
-            printf("Chair %d: %d\n", j+1, barInfo.seats[i][j]);
+            printf("Chair %d: %d\n", j, barInfo.seats[i][j]);
         }
     }
+}
+
+int lookForTable(BarInfo barInfo)
+{
+    // in case we dont find a table return -1
+    int tableId = -1;
+
+    for(int i = 0; i < TABLES_NUM; i++)
+    {
+        if(barInfo.allowsEntry[i])
+        {
+            tableId = i;
+            break;
+        }
+    }
+
+    return tableId;
 }

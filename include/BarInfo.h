@@ -15,3 +15,4 @@ typedef struct
 
 BarInfo createBarInfo();
 void printBarInfo(BarInfo barInfo);
+int lookForTable(BarInfo barInfo);

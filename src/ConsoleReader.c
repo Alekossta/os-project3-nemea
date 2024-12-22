@@ -1,5 +1,6 @@
 #include "ConsoleReader.h"
 #include "string.h"
+#include "stdlib.h"
 
 ConsoleArguments readConsole(int argumentsCount, char* arguments[])
 {
