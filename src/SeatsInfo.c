@@ -72,3 +72,28 @@ int takeChair(SeatsInfo* seatsInfo, int table, pid_t visitor)
 
     return chairToTake;
 }
+
+void leaveChair(SeatsInfo* seatsInfo, int table, int chair)
+{
+    seatsInfo->seats[table][chair] = -1;
+
+    int leftCounter = 0;
+    for(int i = 0; i < CHAIRS_NUM; i++)
+    {
+        if(seatsInfo->seats[table][i] == -1)
+        {
+            leftCounter++;
+        }
+    }
+
+    // if everyone has left reset to 0
+    if(leftCounter == CHAIRS_NUM)
+    {   
+        for(int i = 0; i < CHAIRS_NUM; i++)
+        {
+            seatsInfo->seats[table][i] = 0;
+        }
+
+        seatsInfo->allowsEntry[table] = 1;
+    }
+}

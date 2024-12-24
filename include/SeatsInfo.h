@@ -12,4 +12,4 @@ SeatsInfo createSeatsInfo();
 void printSeatsInfo();
 int lookForTable(SeatsInfo seatsInfo);
 int takeChair(SeatsInfo* seatsInfo, int table, pid_t visitor);
-void leaveChair(SeatsInfo* seatsInfo, pid_t visitor);
+void leaveChair(SeatsInfo* seatsInfo, int table, int chair);

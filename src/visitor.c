@@ -96,6 +96,7 @@ int main(int argumentsCount, char* arguments[])
     usleep((useconds_t)(randomTimeToSit * 1e6));
 
     // leave table
+    leaveChair(&(ptr->seatsInfo), tableToSit, chairToSit);
 
     // clean up shared memory
     munmap(ptr, SHARED_MEMORY_SIZE);

@@ -107,7 +107,7 @@ int main(int argumentsCount, char* arguments[])
         pids[i] = fork();
         if(pids[i] == 0)
         {
-            char* args[] = {"./visitor", "-d", "10", "-s", SHARED_MEMORY_NAME, NULL};
+            char* args[] = {"./visitor", "-d", "5", "-s", SHARED_MEMORY_NAME, NULL};
             if(execv(args[0], args) == - 1)
             {
                 perror("execv failed");
