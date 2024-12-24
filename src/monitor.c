@@ -7,9 +7,13 @@
 #include "definitions.h"
 #include "SharedMemorySegment.h"
 #include "BarInfo.h"
+#include <stdlib.h>
+#include <time.h>
 
 int main(int argumentsCount, char* arguments[])
 {
+    srand(time(NULL));
+
     ConsoleArguments consoleArguments;
     consoleArguments = readConsole(argumentsCount, arguments);
     printf("Hello from monitor looking in shared memory id: %s\n", consoleArguments.sharedMemoryName);

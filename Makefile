@@ -57,7 +57,7 @@ rvisitor:
 	./visitor -d 10 -s "${SHARED_MEMORY_NAME}"
 
 rrecep:
-	./receptionist -d 10 -s "${SHARED_MEMORY_NAME}"
+	./receptionist -d 2 -s "${SHARED_MEMORY_NAME}"
 
 rmonitor:
 	./monitor -s "${SHARED_MEMORY_NAME}"

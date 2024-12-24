@@ -12,6 +12,7 @@
 #include "definitions.h"
 #include <semaphore.h>
 #include <sys/wait.h>
+#include <time.h>
 
 volatile bool bRunning = true;
 
@@ -25,6 +26,8 @@ void handleSignal_CtrlC(int signal)
 
 int main(int argumentsCount, char* arguments[])
 {
+    //srand(time(NULL));
+
     printf("Press Ctrl+C to stop running main\n");
 
     // listen for Ctrl+C signal
@@ -58,35 +61,17 @@ int main(int argumentsCount, char* arguments[])
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
-    pthread_mutex_init(&(ptr->writeLock), &attr);
+    pthread_mutex_init(&(ptr->barLock), &attr);
+    pthread_mutex_init(&(ptr->seatsLock), &attr);
     pthread_mutexattr_destroy(&attr);
 
-    pthread_mutex_lock(&(ptr->writeLock));
+    pthread_mutex_lock(&(ptr->barLock));
     ptr->barInfo = createBarInfo();
-    pthread_mutex_unlock(&(ptr->writeLock));
+    pthread_mutex_unlock(&(ptr->barLock));
 
-    // create a semaphore for each table
-    sem_t* tableSemaphores[TABLES_NUM];
-    const char* tableSemaphoreNames[TABLES_NUM] = {"/table0_sem", "/table1_sem", "/table2_sem"};
-    for(int i = 0; i < TABLES_NUM; i++)
-    {
-        tableSemaphores[i] = sem_open(tableSemaphoreNames[i], O_CREAT | O_EXCL, 0644, CHAIRS_NUM);
-        if(tableSemaphores[i] == SEM_FAILED)
-        {
-            perror("sem_open");
-            // Cleanup previously created semaphores
-            for (int j = 0; j < i; j++) {
-                sem_unlink(tableSemaphoreNames[j]);
-            }
-
-            // in case of error close shared memory too
-            munmap(ptr, SHARED_MEMORY_SIZE);
-            close(smFd);
-            shm_unlink(SHARED_MEMORY_NAME);
-
-            exit(EXIT_FAILURE);
-        }
-    }
+    pthread_mutex_lock(&(ptr->seatsLock));
+    ptr->seatsInfo = createSeatsInfo();
+    pthread_mutex_unlock(&(ptr->seatsLock));
 
     // create a semaphore for the bar queue
     sem_t* barSemaphore = sem_open("/bar_sem", O_CREAT | O_EXCL, 0644, 1);
@@ -96,21 +81,14 @@ int main(int argumentsCount, char* arguments[])
         // clean up shared memory
         munmap(ptr, SHARED_MEMORY_SIZE);
         close(smFd);
-        shm_unlink(SHARED_MEMORY_NAME);
-
-        // clean up semaphores
-        for(int i = 0; i < TABLES_NUM; i++)
-        {
-            sem_close(tableSemaphores[i]);
-            sem_unlink(tableSemaphoreNames[i]);
-        }   
+        shm_unlink(SHARED_MEMORY_NAME);  
     }
     
     // create receptionist process
     pid_t pid = fork();
     if(pid == 0)
     {
-        char* args[] = {"./receptionist", "-d", "10", "-s", SHARED_MEMORY_NAME, NULL};
+        char* args[] = {"./receptionist", "-d", "1", "-s", SHARED_MEMORY_NAME, NULL};
         if(execv(args[0], args) == - 1)
         {
             perror("execv failed");
@@ -118,8 +96,11 @@ int main(int argumentsCount, char* arguments[])
         }
     }
 
+    // wait a bit for the receptionist to settle in the bar
+    sleep(1);
+
     // create visitor processes
-    const int testingVisitorsCount = 5;
+    const int testingVisitorsCount = 15;
     int pids[testingVisitorsCount];
     for(int i = 0; i < testingVisitorsCount; i++)
     {
@@ -149,17 +130,11 @@ int main(int argumentsCount, char* arguments[])
     }
 
     // clean up shared memory
-    pthread_mutex_destroy(&(ptr->writeLock));
+    pthread_mutex_destroy(&(ptr->barLock));
+    pthread_mutex_destroy(&(ptr->seatsLock));
     munmap(ptr, SHARED_MEMORY_SIZE);
     close(smFd);
     shm_unlink(SHARED_MEMORY_NAME);
-
-    // clean up table semaphores
-    for(int i = 0; i < TABLES_NUM; i++)
-    {
-        sem_close(tableSemaphores[i]);
-        sem_unlink(tableSemaphoreNames[i]);
-    }
 
     // clean up bar semaphore
     sem_close(barSemaphore);

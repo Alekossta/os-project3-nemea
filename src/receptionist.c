@@ -3,9 +3,13 @@
 #include <asm-generic/fcntl.h>
 #include <SharedMemorySegment.h>
 #include <sys/mman.h>
+#include <stdlib.h>
+#include <time.h>
 
 int main(int argumentsCount, char* arguments[])
 {
+    srand(time(NULL));
+
     ConsoleArguments consoleArguments;
     consoleArguments = readConsole(argumentsCount, arguments);
     printf("Hello from receptionist going to serve for %d and shared memory is %s!\n",
@@ -26,7 +30,6 @@ int main(int argumentsCount, char* arguments[])
         return -1;
     }
 
-    pthread_mutex_lock(&(ptr->writeLock));
+    // dont have to have a mutex here cause only one receptionist will access it
     ptr->receptionistInfo.timeToServe = consoleArguments.time;
-    pthread_mutex_unlock(&(ptr->writeLock));
 }

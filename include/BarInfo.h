@@ -1,6 +1,7 @@
 #pragma once
 
 #include "definitions.h"
+#include <unistd.h>
 
 typedef struct
 {
@@ -9,10 +10,8 @@ typedef struct
     unsigned wineSold;
     unsigned cheeseSold;
     unsigned saladSold;
-    int seats[TABLES_NUM][CHAIRS_NUM];
-    int allowsEntry[TABLES_NUM];
+
 } BarInfo;
 
 BarInfo createBarInfo();
 void printBarInfo(BarInfo barInfo);
-int lookForTable(BarInfo barInfo);
