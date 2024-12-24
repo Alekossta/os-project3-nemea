@@ -85,12 +85,10 @@ int main(int argumentsCount, char* arguments[])
     // simulate serving
     double timeToServe = ptr->receptionistInfo.timeToServe;
     double randomTimeToServe = generateDoubleInRange(0.5 * timeToServe, timeToServe);
-    printf("Began serving me for %lf\n", randomTimeToServe);
     usleep((useconds_t)(randomTimeToServe * 1e6));
     sem_post(barSemaphore);
 
     // go to table and sit
-    printf("going to sit at table %d chair %d\n", tableToSit, chairToSit);
     double timeToSit = consoleArguments.time;
     double randomTimeToSit = generateDoubleInRange(0.7 * timeToSit, timeToSit);
     usleep((useconds_t)(randomTimeToSit * 1e6));

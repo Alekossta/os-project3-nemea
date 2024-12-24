@@ -64,9 +64,12 @@ int takeChair(SeatsInfo* seatsInfo, int table, pid_t visitor)
         }
     }
 
+    printf("Reserved sit at table %d chair %d\n", table, chairToTake);
+
     // was 3 and now 4
     if(chairToTake != -1 && chairsFilled == 3)
     {
+        printf("Table %d is now full\n", table);
         seatsInfo->allowsEntry[table] = 0;
     }
 
@@ -76,6 +79,7 @@ int takeChair(SeatsInfo* seatsInfo, int table, pid_t visitor)
 void leaveChair(SeatsInfo* seatsInfo, int table, int chair)
 {
     seatsInfo->seats[table][chair] = -1;
+    printf("Left from table %d chair %d\n", table, chair);
 
     int leftCounter = 0;
     for(int i = 0; i < CHAIRS_NUM; i++)
@@ -95,5 +99,7 @@ void leaveChair(SeatsInfo* seatsInfo, int table, int chair)
         }
 
         seatsInfo->allowsEntry[table] = 1;
+
+        printf("Table %d now allows entry\n", table);
     }
 }
