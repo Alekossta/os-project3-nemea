@@ -5,12 +5,10 @@
 
 typedef struct
 {
-    unsigned totalVisitors;
     unsigned waterSold;
     unsigned wineSold;
     unsigned cheeseSold;
     unsigned saladSold;
-
 } BarInfo;
 
 BarInfo createBarInfo();

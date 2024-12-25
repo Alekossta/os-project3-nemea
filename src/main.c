@@ -57,7 +57,7 @@ int main(int argumentsCount, char* arguments[])
         exit(EXIT_FAILURE);
     }
     
-    // setup mutex for writing lock
+    // setup mutex for locks
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
@@ -128,6 +128,12 @@ int main(int argumentsCount, char* arguments[])
     {
         waitpid(pids[i], NULL, 0);
     }
+
+    // print statistics
+    printf("Total visitors are %u\n", ptr->seatsInfo.totalVisitorsVisited);
+    printf("Average time waited is %f\n", ptr->seatsInfo.timeWaitedSum / ptr->seatsInfo.totalVisitorsVisited);
+    printf("Average time stayed is %f\n", ptr->seatsInfo.timeVisitedSum / ptr->seatsInfo.totalVisitorsVisited);
+    printBarInfo(ptr->barInfo);
 
     // clean up shared memory
     pthread_mutex_destroy(&(ptr->barLock));

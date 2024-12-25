@@ -33,6 +33,7 @@ int main(int argumentsCount, char* arguments[])
     }
 
     printBarInfo(ptr->barInfo);
+    printSeatsInfo(ptr->seatsInfo);
 
     // clean up 
     munmap(ptr, SHARED_MEMORY_SIZE);

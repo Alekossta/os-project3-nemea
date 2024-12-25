@@ -36,6 +36,8 @@ int main(int argumentsCount, char* arguments[])
         return -1;
     }
 
+    clock_t startWait = clock();
+    clock_t startStayedAt = clock();
     pthread_mutex_lock(&(ptr->seatsLock));
 
     int tableToSit = lookForTable(ptr->seatsInfo);
@@ -43,8 +45,9 @@ int main(int argumentsCount, char* arguments[])
     {
         tableToSit = lookForTable(ptr->seatsInfo);
     }
-    
-    int chairToSit = takeChair(&(ptr->seatsInfo), tableToSit, getpid());
+    clock_t endWait = clock();
+    double timeWaited = (double)(endWait - startWait) / CLOCKS_PER_SEC;
+    int chairToSit = takeChair(&(ptr->seatsInfo), tableToSit, getpid(), timeWaited);
     pthread_mutex_unlock(&(ptr->seatsLock));
 
     sem_t* barSemaphore = sem_open("/bar_sem", O_RDWR);
@@ -93,8 +96,10 @@ int main(int argumentsCount, char* arguments[])
     double randomTimeToSit = generateDoubleInRange(0.7 * timeToSit, timeToSit);
     usleep((useconds_t)(randomTimeToSit * 1e6));
 
+    clock_t endStayedAt = clock();
+    double timeStayed = (double)(endStayedAt - startStayedAt) / CLOCKS_PER_SEC;
     // leave table
-    leaveChair(&(ptr->seatsInfo), tableToSit, chairToSit);
+    leaveChair(&(ptr->seatsInfo), tableToSit, chairToSit, timeStayed);
 
     // clean up shared memory
     munmap(ptr, SHARED_MEMORY_SIZE);
