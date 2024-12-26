@@ -4,9 +4,11 @@
 
 typedef struct 
 {
-    FILE* logginFile;
+    int loggingFileFd;
 } LoggerInfo;
 
+
 LoggerInfo openLoggingFile();
+void resetFile();
 void writeToLoggingFile();
 void closeLogginFile(LoggerInfo loggerInfo);

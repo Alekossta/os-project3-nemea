@@ -13,6 +13,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include "Logger.h"
+
 
 int main(int argumentsCount, char* arguments[])
 {
@@ -20,6 +22,8 @@ int main(int argumentsCount, char* arguments[])
 
     ConsoleArguments consoleArguments;
     consoleArguments = readConsole(argumentsCount, arguments);
+
+    LoggerInfo loggerInfo = openLoggingFile();
 
     // open shared memory
     int smFd = shm_open(consoleArguments.sharedMemoryName, O_RDWR, 0666);
@@ -38,22 +42,41 @@ int main(int argumentsCount, char* arguments[])
 
     clock_t startWait = clock();
     clock_t startStayedAt = clock();
+
+    char message[256];
+    snprintf(message, sizeof(message), "%d arrived at bar", getpid());
+    writeToLoggingFile(loggerInfo, message);
+
     pthread_mutex_lock(&(ptr->seatsLock));
+
+    snprintf(message, sizeof(message), "%d is now in front of the queue and waits", getpid());
+    writeToLoggingFile(loggerInfo, message);
 
     int tableToSit = lookForTable(ptr->seatsInfo);
     while(tableToSit == -1)
     {
         tableToSit = lookForTable(ptr->seatsInfo);
     }
+
+    snprintf(message, sizeof(message), "%d found a chair to sit", getpid());
+    writeToLoggingFile(loggerInfo, message);
+
     clock_t endWait = clock();
     double timeWaited = (double)(endWait - startWait) / CLOCKS_PER_SEC;
     int chairToSit = takeChair(&(ptr->seatsInfo), tableToSit, getpid(), timeWaited);
+
+
     pthread_mutex_unlock(&(ptr->seatsLock));
 
     sem_t* barSemaphore = sem_open("/bar_sem", O_RDWR);
+    
+    snprintf(message, sizeof(message), "%d waits to be served", getpid());
+    writeToLoggingFile(loggerInfo, message);
+
     sem_wait(barSemaphore);
 
-    pthread_mutex_lock(&(ptr->barLock));
+    snprintf(message, sizeof(message), "%d starts to be served", getpid());
+    writeToLoggingFile(loggerInfo, message);
 
     // 0=water,1=wine,2=water&wine
     int waterWineChoice = generateIntInRange(0,2);
@@ -83,12 +106,14 @@ int main(int argumentsCount, char* arguments[])
         ptr->barInfo.saladSold++;
     }
 
-    pthread_mutex_unlock(&(ptr->barLock));
-
     // simulate serving
     double timeToServe = ptr->receptionistInfo.timeToServe;
     double randomTimeToServe = generateDoubleInRange(0.5 * timeToServe, timeToServe);
     usleep((useconds_t)(randomTimeToServe * 1e6));
+
+    snprintf(message, sizeof(message), "%d finished being served and goes to sit", getpid());
+    writeToLoggingFile(loggerInfo, message);
+
     sem_post(barSemaphore);
 
     // go to table and sit
@@ -101,7 +126,11 @@ int main(int argumentsCount, char* arguments[])
     // leave table
     leaveChair(&(ptr->seatsInfo), tableToSit, chairToSit, timeStayed);
 
+    snprintf(message, sizeof(message), "%d left", getpid());
+    writeToLoggingFile(loggerInfo, message);
+
     // clean up shared memory
     munmap(ptr, SHARED_MEMORY_SIZE);
     close(smFd);
+    closeLogginFile(loggerInfo);
 }

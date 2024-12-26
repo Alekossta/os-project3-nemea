@@ -13,7 +13,7 @@
 #include <semaphore.h>
 #include <sys/wait.h>
 #include <time.h>
-
+#include "Logger.h"
 volatile bool bRunning = true;
 
 void handleSignal_CtrlC(int signal)
@@ -27,6 +27,9 @@ void handleSignal_CtrlC(int signal)
 int main(int argumentsCount, char* arguments[])
 {
     //srand(time(NULL));
+
+    // delete logging file to reset data.
+    resetFile();
 
     printf("Press Ctrl+C to stop running main\n");
 
