@@ -8,7 +8,6 @@
 typedef struct
 {
     pthread_mutex_t seatsLock;
-    pthread_mutex_t barLock;
     SeatsInfo seatsInfo;
     BarInfo barInfo;
     ReceptionistInfo receptionistInfo;

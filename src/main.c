@@ -28,7 +28,7 @@ int main(int argumentsCount, char* arguments[])
 {
     //srand(time(NULL));
 
-    // delete logging file to reset data.
+    // delete logging file to reset data
     resetFile();
 
     printf("Press Ctrl+C to stop running main\n");
@@ -64,13 +64,10 @@ int main(int argumentsCount, char* arguments[])
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
-    pthread_mutex_init(&(ptr->barLock), &attr);
     pthread_mutex_init(&(ptr->seatsLock), &attr);
     pthread_mutexattr_destroy(&attr);
 
-    pthread_mutex_lock(&(ptr->barLock));
     ptr->barInfo = createBarInfo();
-    pthread_mutex_unlock(&(ptr->barLock));
 
     pthread_mutex_lock(&(ptr->seatsLock));
     ptr->seatsInfo = createSeatsInfo();
@@ -103,7 +100,7 @@ int main(int argumentsCount, char* arguments[])
     sleep(1);
 
     // create visitor processes
-    const int testingVisitorsCount = 15;
+    const int testingVisitorsCount = 50;
     int pids[testingVisitorsCount];
     for(int i = 0; i < testingVisitorsCount; i++)
     {
@@ -139,7 +136,6 @@ int main(int argumentsCount, char* arguments[])
     printBarInfo(ptr->barInfo);
 
     // clean up shared memory
-    pthread_mutex_destroy(&(ptr->barLock));
     pthread_mutex_destroy(&(ptr->seatsLock));
     munmap(ptr, SHARED_MEMORY_SIZE);
     close(smFd);

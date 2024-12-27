@@ -51,7 +51,10 @@ clean:
 
 # Runtime commands
 rmain:
-	./main 
+	./main
+
+valgrind_main: main
+	valgrind --leak-check=full --trace-children=yes ./main
 
 rvisitor:
 	./visitor -d 10 -s "${SHARED_MEMORY_NAME}"

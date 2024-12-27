@@ -15,6 +15,11 @@
 #include <sys/types.h>
 #include "Logger.h"
 
+double getElapsedSeconds(struct timespec* start, struct timespec* end)
+{
+    return (end->tv_sec - start->tv_sec) + (end->tv_nsec - start->tv_nsec) / 1e9;
+}
+
 
 int main(int argumentsCount, char* arguments[])
 {
@@ -40,8 +45,9 @@ int main(int argumentsCount, char* arguments[])
         return -1;
     }
 
-    clock_t startWait = clock();
-    clock_t startStayedAt = clock();
+
+    struct timespec arrivedTime;
+    clock_gettime(CLOCK_MONOTONIC, &arrivedTime);
 
     char message[256];
     snprintf(message, sizeof(message), "%d arrived at bar", getpid());
@@ -58,11 +64,14 @@ int main(int argumentsCount, char* arguments[])
         tableToSit = lookForTable(ptr->seatsInfo);
     }
 
-    snprintf(message, sizeof(message), "%d found a chair to sit", getpid());
-    writeToLoggingFile(loggerInfo, message);
 
-    clock_t endWait = clock();
-    double timeWaited = (double)(endWait - startWait) / CLOCKS_PER_SEC;
+
+    struct timespec waitEndTime;
+    clock_gettime(CLOCK_MONOTONIC, &waitEndTime);
+
+    double timeWaited = getElapsedSeconds(&arrivedTime, &waitEndTime);
+    snprintf(message, sizeof(message), "%d found a chair to sit. waited %f", getpid(), timeWaited);
+    writeToLoggingFile(loggerInfo, message);
     int chairToSit = takeChair(&(ptr->seatsInfo), tableToSit, getpid(), timeWaited);
 
 
@@ -121,12 +130,13 @@ int main(int argumentsCount, char* arguments[])
     double randomTimeToSit = generateDoubleInRange(0.7 * timeToSit, timeToSit);
     usleep((useconds_t)(randomTimeToSit * 1e6));
 
-    clock_t endStayedAt = clock();
-    double timeStayed = (double)(endStayedAt - startStayedAt) / CLOCKS_PER_SEC;
+    struct timespec visitEndTime;
+    clock_gettime(CLOCK_MONOTONIC, &visitEndTime);
+    double timeStayed = getElapsedSeconds(&arrivedTime, &visitEndTime);
     // leave table
     leaveChair(&(ptr->seatsInfo), tableToSit, chairToSit, timeStayed);
 
-    snprintf(message, sizeof(message), "%d left", getpid());
+    snprintf(message, sizeof(message), "%d left. time stayed: %f", getpid(), timeStayed);
     writeToLoggingFile(loggerInfo, message);
 
     // clean up shared memory
