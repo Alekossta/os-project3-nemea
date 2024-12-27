@@ -143,4 +143,7 @@ int main(int argumentsCount, char* arguments[])
     munmap(ptr, SHARED_MEMORY_SIZE);
     close(smFd);
     closeLogginFile(loggerInfo);
+
+    // clean up semaphore
+    sem_close(barSemaphore);
 }

@@ -122,13 +122,6 @@ int main(int argumentsCount, char* arguments[])
         sleep(5);
     }
 
-    waitpid(pid, NULL, 0); // Wait for the receptionist process to complete
-
-    for(int i = 0; i < testingVisitorsCount; i++)
-    {
-        waitpid(pids[i], NULL, 0);
-    }
-
     // print statistics
     printf("Total visitors are %u\n", ptr->seatsInfo.totalVisitorsVisited);
     printf("Average time waited is %f\n", ptr->seatsInfo.timeWaitedSum / ptr->seatsInfo.totalVisitorsVisited);

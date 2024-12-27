@@ -50,4 +50,28 @@ info μερος του shared memory segment. Αφου βρει καρεκλα �
 και πιω και μετα κανω usleep στο range που εχει max την ωρα που "ανεβασε" ο receptionist στο shared memory
 10. επειτα κανω post στο semaphore του bar και μετα παω και κανω usleep στο τραπεζι
 με χρονικο διαστημα με range με max οσο πηραμε απο το command line.
-11. Αφου τελειωσω 
+11. Αφου τελειωσω αποδεσμευω την καρεκλα
+12. Τελος καθαριζω share memory και semaphore
+
+# Βοηθητικα Προγραμματα
+
+## BarInfo
+struct για να αποθηκευει τα δεδομενα του μπαρ
+
+## Console Reader
+helper για να διαβαζουμε απο την κονσολα
+
+## Logger
+helper για να κανουμε append σε αρχειο με timestamps και locks.
+
+## ReceptionistInfo
+struct για να αποθηκευει δεδομενα του receptionist
+
+## SeatsInfo
+struct για να αποηθκευει δεδομενα σχετικα με τα τραπεζια και τις καρεκλες
+
+## SharedMemorySegment
+struct για την αναπαρασταση του shared memory
+
+## Util
+utility functionss

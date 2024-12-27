@@ -50,17 +50,17 @@ clean:
 	rm -f $(OBJ_DIR)/*.o main monitor receptionist visitor
 
 # Runtime commands
-rmain:
+rmain: all 
 	./main
 
-valgrind_main: main
+valgrind_main: all
 	valgrind --leak-check=full --trace-children=yes ./main
 
-rvisitor:
+rvisitor: all 
 	./visitor -d 10 -s "${SHARED_MEMORY_NAME}"
 
-rrecep:
+rrecep: all 
 	./receptionist -d 2 -s "${SHARED_MEMORY_NAME}"
 
-rmonitor:
+rmonitor: all 
 	./monitor -s "${SHARED_MEMORY_NAME}"
